@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAC Properties Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #1a1a1a;
+            color: #d1d5db;
+        }
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2.5rem;
+            background-color: #262626;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #f97316;
+            letter-spacing: -0.025em;
+        }
+        .form-section {
+            background-color: #374151;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease-in-out;
+        }
+        .form-section:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+        .form-title {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #f97316;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .form-title:hover {
+            color: #ea580c;
+        }
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 6px;
+            border: 1px solid #4b5563;
+            background-color: #1f2937;
+            color: #d1d5db;
+            transition: all 0.2s;
+        }
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: #f97316;
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.25);
+        }
+        .submit-button {
+            width: 100%;
+            padding: 1rem;
+            background-color: #f97316;
+            color: white;
+            font-weight: 700;
+            border-radius: 8px;
+            transition: background-color 0.2s, transform 0.2s;
+            cursor: pointer;
+        }
+        .submit-button:hover {
+            background-color: #ea580c;
+            transform: translateY(-2px);
+        }
+        .message-box-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .message-box-container.visible {
+            display: flex;
+            opacity: 1;
+        }
+        .message-box {
+            background-color: #262626;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            max-width: 500px;
+            color: #d1d5db;
+        }
+        .signature-pad {
+            border: 1px solid #4b5563;
+            background-color: #1f2937;
+            border-radius: 8px;
+            cursor: crosshair;
+        }
+        .portal-screen, .application-screen, .admin-screen {
+            transition: opacity 0.5s ease-in-out;
+        }
+        .hidden {
+            display: none;
+            opacity: 0;
+        }
+        .portal-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.25rem 1.5rem;
+            color: white;
+            font-size: 1.125rem;
+            font-weight: 700;
+            border-radius: 12px;
+            transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .portal-button svg {
+            margin-right: 0.75rem;
+        }
+        .portal-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.2);
+        }
+        .apply-button { background-color: #f97316; }
+        .apply-button:hover { background-color: #ea580c; }
+        .fee-button { background-color: #4b5563; }
+        .fee-button:hover { background-color: #6b7280; }
+        .rent-button { background-color: #1e40af; }
+        .rent-button:hover { background-color: #1d4ed8; }
+        .history-button { background-color: #dc2626; }
+        .history-button:hover { background-color: #b91c1c; }
+        .contact-button { background-color: #6b7280; }
+        .contact-button:hover { background-color: #4b5563; }
+        .admin-button {
+            background-color: #4b5563;
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+        .admin-button:hover { background-color: #6b7280; }
+        .admin-status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        .approved { background-color: #10b981; color: white; }
+        .denied { background-color: #ef4444; color: white; }
+        .pending { background-color: #f59e0b; color: white; }
+    </style>
+</head>
+<body class="bg-[#1a1a1a]">
+
+    <div class="container relative">
+        <header class="header">
+            <h1>LAC Properties</h1>
+            <p class="text-gray-400 mt-2">A Premium Living Experience.</p>
+        </header>
+
+        <div id="portalScreen" class="portal-screen">
+            <h2 class="text-3xl font-bold text-white text-center mb-6">Welcome</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 w-full max-w-2xl mx-auto">
+                <button id="applyBtn" class="portal-button apply-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Apply Now
+                </button>
+                <button id="feeBtn" class="portal-button fee-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    Pay Application Fee
+                </button>
+                <a href="https://buy.stripe.com/7sY00i0Ae4Fg72sdmLenS01" target="_blank" class="portal-button rent-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V5m0 2v1m0 16a9 9 0 110-18 9 9 0 010 18z" />
+                    </svg>
+                    Pay Your Rent
+                </a>
+                <a href="https://billing.stripe.com/p/login/14k5kmbhk7ZOcWQcMM" target="_blank" class="portal-button history-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V5m0 2v1m0 16a9 9 0 110-18 9 9 0 010 18z" />
+                    </svg>
+                    Payment History
+                </a>
+                <button id="contactBtn" class="portal-button contact-button md:col-span-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.134l-2.77 1.95a12 12 0 006.51 6.51l1.95-2.77a1 1 0 011.134-.502l4.493 1.498a1 1 0 01.684.948V19a2 2 0 01-2 2h-1C9.79 21 3 14.21 3 6V5z" />
+                    </svg>
+                    Contact Us
+                </button>
+            </div>
+        </div>
+
+        <div id="applicationScreen" class="application-screen hidden">
+            <button id="backToPortalBtn" class="bg-[#374151] hover:bg-[#4b5563] text-white py-2 px-4 rounded-md mb-6 transition-colors flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Back
+            </button>
+            <h2 class="text-3xl font-bold text-center mb-6 text-white">Rental Application</h2>
+            <form id="applicationForm" class="space-y-4">
+                <div class="form-section">
+                    <div class="form-title" onclick="toggleSection('personalInfo')">
+                        <span>Personal Information</span>
+                        <svg id="personalInfoIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transform rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </div>
+                    <div id="personalInfoSection" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 hidden">
+                        <div><label for="fullName" class="form-label text-sm">Full Name</label><input type="text" id="fullName" name="fullName" class="form-input" required></div>
+                        <div><label for="email" class="form-label text-sm">Email Address</label><input type="email" id="email" name="email" class="form-input" required></div>
+                        <div><label for="phone" class="form-label text-sm">Phone Number</label><input type="tel" id="phone" name="phone" class="form-input" required pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="555-555-5555"></div>
+                        <div><label for="dob" class="form-label text-sm">Date of Birth</label><input type="date" id="dob" name="dob" class="form-input" required></div>
+                        <div><label for="ssn" class="form-label text-sm">Social Security Number</label><input type="text" id="ssn" name="ssn" class="form-input" placeholder="XXX-XX-XXXX" required pattern="[0-9]{3}-[0-9]{2}-[0-9]{4}"></div>
+                        <div><label for="driversLicense" class="form-label text-sm">Driver's License/ID Number</label><input type="text" id="driversLicense" name="driversLicense" class="form-input" required></div>
+                        <div class="md:col-span-2"><label for="address" class="form-label text-sm">Current Address</label><textarea id="address" name="address" rows="2" class="form-textarea" required></textarea></div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <div class="form-title" onclick="toggleSection('residentialHistory')">
+                        <span>Residential History</span>
+                        <svg id="residentialHistoryIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transform rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </div>
+                    <div id="residentialHistorySection" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 hidden">
+                        <p class="text-gray-400 mb-4 md:col-span-2 text-sm">Please provide your last two years of residential history.</p>
+                        <div><label for="prevAddress1" class="form-label text-sm">Previous Address</label><input type="text" id="prevAddress1" name="prevAddress1" class="form-input"></div>
+                        <div><label for="prevLandlord1" class="form-label text-sm">Landlord's Name</label><input type="text" id="prevLandlord1" name="prevLandlord1" class="form-input"></div>
+                        <div><label for="moveIn1" class="form-label text-sm">Move-In Date</label><input type="date" id="moveIn1" name="moveIn1" class="form-input"></div>
+                        <div><label for="moveOut1" class="form-label text-sm">Move-Out Date</label><input type="date" id="moveOut1" name="moveOut1" class="form-input"></div>
+                        <div class="md:col-span-2"><label for="reasonForLeaving1" class="form-label text-sm">Reason for Leaving</label><textarea id="reasonForLeaving1" name="reasonForLeaving1" rows="2" class="form-textarea"></textarea></div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <div class="form-title" onclick="toggleSection('employmentDetails')">
+                        <span>Employment Details</span>
+                        <svg id="employmentDetailsIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transform rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </div>
+                    <div id="employmentDetailsSection" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 hidden">
+                        <div><label for="employer" class="form-label text-sm">Current Employer</label><input type="text" id="employer" name="employer" class="form-input" required></div>
+                        <div><label for="jobTitle" class="form-label text-sm">Job Title</label><input type="text" id="jobTitle" name="jobTitle" class="form-input" required></div>
+                        <div><label for="income" class="form-label text-sm">Gross Monthly Income</label><input type="number" id="income" name="income" class="form-input" required></div>
+                        <div><label for="employmentLength" class="form-label text-sm">Length of Employment</label><input type="text" id="employmentLength" name="employmentLength" class="form-input" required></div>
+                        <div class="md:col-span-2"><label for="supervisorName" class="form-label text-sm">Supervisor's Name & Phone</label><input type="text" id="supervisorName" name="supervisorName" class="form-input" placeholder="e.g., Jane Doe, 555-123-4567"></div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <div class="form-title" onclick="toggleSection('otherInfo')">
+                        <span>Other Information</span>
+                        <svg id="otherInfoIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transform rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </div>
+                    <div id="otherInfoSection" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 hidden">
+                        <div><label for="vehicleMake" class="form-label text-sm">Vehicle Make</label><input type="text" id="vehicleMake" name="vehicleMake" class="form-input"></div>
+                        <div><label for="vehicleModel" class="form-label text-sm">Vehicle Model</label><input type="text" id="vehicleModel" name="vehicleModel" class="form-input"></div>
+                        <div><label for="vehicleYear" class="form-label text-sm">Vehicle Year</label><input type="text" id="vehicleYear" name="vehicleYear" class="form-input"></div>
+                        <div><label for="licensePlate" class="form-label text-sm">License Plate</label><input type="text" id="licensePlate" name="licensePlate" class="form-input"></div>
+                        <div class="md:col-span-2"><label for="occupants" class="form-label text-sm">Additional Occupants (Name, Age, Relationship)</label><textarea id="occupants" name="occupants" rows="2" class="form-textarea" placeholder="e.g., John Smith, 30, Co-applicant; Sally Smith, 5, Daughter"></textarea></div>
+                        <div class="md:col-span-2"><label for="pets" class="form-label text-sm">Pets (Type, Breed, Weight)</label><textarea id="pets" name="pets" rows="2" class="form-textarea" placeholder="e.g., Dog, Golden Retriever, 60 lbs"></textarea></div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <div class="form-title" onclick="toggleSection('authorization')">
+                        <span>Authorization and Signature</span>
+                        <svg id="authorizationIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transform rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </div>
+                    <div id="authorizationSection" class="mt-4 hidden">
+                        <p class="text-gray-500 mb-4 text-sm">
+                            I authorize the landlord to conduct a full investigation of the information provided, including credit, criminal, and rental history. I certify that the information in this application is true and correct.
+                        </p>
+                        <div class="mb-4 flex items-center"><input type="checkbox" id="authorizationCheck" name="authorizationCheck" class="mr-2 h-4 w-4 bg-gray-700 border-gray-600 rounded-sm text-blue-500 focus:ring-blue-500" required><label for="authorizationCheck" class="text-sm font-semibold text-gray-400">I agree to the terms of this authorization.</label></div>
+                        <label class="form-label text-sm">Digital Signature</label>
+                        <div class="relative w-full h-40">
+                            <canvas id="signatureCanvas" class="signature-pad absolute top-0 left-0 w-full h-full cursor-crosshair"></canvas>
+                        </div>
+                        <div class="flex space-x-2 mt-2">
+                            <button type="button" id="clearSignatureBtn" class="w-1/2 py-2 px-4 rounded-md bg-[#374151] text-[#d1d5db] hover:bg-[#4b5563] transition-colors text-sm">Clear Signature</button>
+                            <input type="date" id="signatureDate" name="signatureDate" class="w-1/2 form-input" required>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="submit-button">Submit Application</button>
+            </form>
+        </div>
+
+        <div id="adminScreen" class="admin-screen hidden">
+            <button id="backToPortalFromAdminBtn" class="bg-[#374151] hover:bg-[#4b5563] text-white py-2 px-4 rounded-md mb-6 transition-colors flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Back to Portal
+            </button>
+            <h2 class="text-3xl font-bold text-center mb-6 text-white">Admin Dashboard</h2>
+            <div id="applicationsList" class="space-y-4">
+                <p id="noApplicationsMsg" class="text-gray-500 text-center">No applications submitted yet.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="adminLoginModal" class="message-box-container">
+        <div class="message-box">
+            <h3 class="text-xl font-bold mb-4">Admin Login</h3>
+            <p class="mb-4 text-gray-400">Please enter the admin password.</p>
+            <input type="password" id="adminPasswordInput" class="w-full form-input mb-4" placeholder="Password">
+            <button id="adminLoginBtn" class="w-full py-2 px-4 rounded-md bg-orange-500 text-white font-bold hover:bg-orange-600">Login</button>
+            <button id="closeAdminLoginBtn" class="mt-4 text-gray-400 hover:text-white">Cancel</button>
+        </div>
+    </div>
+
+    <div id="messageBoxContainer" class="message-box-container">
+        <div class="message-box">
+            <h3 class="text-xl font-bold mb-4">Application Submitted!</h3>
+            <p class="mb-6 text-gray-400">Thank you for your application. We will review your submission shortly. For assistance, please contact us at **<span class="font-semibold text-orange-400">hi@lacproperties.org</span>**.</p>
+            <button id="closeBtn" class="w-full py-2 px-4 rounded-md bg-orange-500 text-white font-bold hover:bg-orange-600">Close</button>
+        </div>
+    </div>
+    <div id="feeMessageBoxContainer" class="message-box-container">
+        <div class="message-box">
+            <h3 class="text-xl font-bold mb-4">Confirm Application Fee Payment</h3>
+            <p class="mb-6 text-gray-400">Please make sure you have submitted your application before paying the fee. If the fee is not paid, your application may be denied.</p>
+            <a href="https://buy.stripe.com/5kQ9ASfv8c7I9aA4QfenS00" target="_blank" class="w-full inline-block py-2 px-4 bg-green-500 text-white font-bold rounded-md hover:bg-green-600 transition-colors">Pay Now</a>
+            <button id="closeFeeBtn" class="mt-4 text-gray-400 hover:text-white">Close</button>
+        </div>
+    </div>
+    <div id="contactMessageBoxContainer" class="message-box-container">
+        <div class="message-box">
+            <h3 class="text-xl font-bold mb-4">Contact Information</h3>
+            <p class="mb-6 text-gray-400">Please choose the appropriate option below to contact us.</p>
+            <a href="tel:678-435-9236" class="w-full inline-block py-2 px-4 bg-blue-500 text-white font-bold rounded-md hover:bg-blue-600 transition-colors mb-2">General Contact</a>
+            <a href="tel:6788349899" class="w-full inline-block py-2 px-4 bg-red-500 text-white font-bold rounded-md hover:bg-red-600 transition-colors">Emergency Maintenance</a>
+            <button id="closeContactBtn" class="mt-4 text-gray-400 hover:text-white">Close</button>
+        </div>
+    </div>
+
+    <button id="showAdminLoginBtn" class="admin-button">Admin</button>
+
+    <footer class="mt-8 text-center text-gray-500 text-xs">
+        <p>LAC Properties is a brand owned and operated by LAC Ventures Group Limited Co., a Georgia limited liability company.</p>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const portalScreen = document.getElementById('portalScreen');
+        const applicationScreen = document.getElementById('applicationScreen');
+        const adminScreen = document.getElementById('adminScreen');
+        const applyBtn = document.getElementById('applyBtn');
+        const feeBtn = document.getElementById('feeBtn');
+        const contactBtn = document.getElementById('contactBtn');
+        const backToPortalBtn = document.getElementById('backToPortalBtn');
+        const backToPortalFromAdminBtn = document.getElementById('backToPortalFromAdminBtn');
+        const form = document.getElementById('applicationForm');
+        const messageBoxContainer = document.getElementById('messageBoxContainer');
+        const feeMessageBoxContainer = document.getElementById('feeMessageBoxContainer');
+        const contactMessageBoxContainer = document.getElementById('contactMessageBoxContainer');
+        const closeBtn = document.getElementById('closeBtn');
+        const closeFeeBtn = document.getElementById('closeFeeBtn');
+        const closeContactBtn = document.getElementById('closeContactBtn');
+        const signatureCanvas = document.getElementById('signatureCanvas');
+        const clearSignatureBtn = document.getElementById('clearSignatureBtn');
+        const showAdminLoginBtn = document.getElementById('showAdminLoginBtn');
+        const adminLoginModal = document.getElementById('adminLoginModal');
+        const adminLoginBtn = document.getElementById('adminLoginBtn');
+        const closeAdminLoginBtn = document.getElementById('closeAdminLoginBtn');
+        const adminPasswordInput = document.getElementById('adminPasswordInput');
+        const applicationsList = document.getElementById('applicationsList');
+        const noApplicationsMsg = document.getElementById('noApplicationsMsg');
+
+        // Signature Pad Logic
+        const ctx = signatureCanvas.getContext('2d');
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+
+        function resizeCanvas() {
+            signatureCanvas.width = signatureCanvas.offsetWidth;
+            signatureCanvas.height = signatureCanvas.offsetHeight;
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#d1d5db';
+            ctx.fillStyle = '#1f2937';
+            ctx.fillRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+        }
+
+        function getCoords(e) {
+            const rect = signatureCanvas.getBoundingClientRect();
+            if (e.touches) {
+                return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
+            }
+            return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const { x, y } = getCoords(e);
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            [lastX, lastY] = [x, y];
+        }
+
+        signatureCanvas.addEventListener('mousedown', (e) => { isDrawing = true; [lastX, lastY] = [getCoords(e).x, getCoords(e).y]; });
+        signatureCanvas.addEventListener('mousemove', draw);
+        signatureCanvas.addEventListener('mouseup', () => isDrawing = false);
+        signatureCanvas.addEventListener('mouseout', () => isDrawing = false);
+        signatureCanvas.addEventListener('touchstart', (e) => { isDrawing = true; e.preventDefault(); [lastX, lastY] = [getCoords(e).x, getCoords(e).y]; });
+        signatureCanvas.addEventListener('touchmove', (e) => { draw(e); e.preventDefault(); });
+        signatureCanvas.addEventListener('touchend', () => isDrawing = false);
+        clearSignatureBtn.addEventListener('click', () => { ctx.fillRect(0, 0, signatureCanvas.width, signatureCanvas.height); });
+
+        // Form & Screen Switching Logic
+        function showScreen(screen) {
+            [portalScreen, applicationScreen, adminScreen].forEach(s => s.classList.add('hidden'));
+            screen.classList.remove('hidden');
+        }
+
+        applyBtn.addEventListener('click', () => {
+            showScreen(applicationScreen);
+            resizeCanvas();
+        });
+        backToPortalBtn.addEventListener('click', () => showScreen(portalScreen));
+        backToPortalFromAdminBtn.addEventListener('click', () => showScreen(portalScreen));
+
+        // Form Submission and Admin Functionality
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const data = {};
+            // Gather all form data by name attribute
+            document.querySelectorAll('input, textarea, select').forEach(element => {
+                const name = element.getAttribute('name');
+                if (name) {
+                    if (element.type === 'checkbox') {
+                        data[name] = element.checked;
+                    } else {
+                        data[name] = element.value;
+                    }
+                }
+            });
+
+            data.signatureImage = signatureCanvas.toDataURL();
+            data.submissionDate = new Date().toISOString();
+            data.status = 'Pending';
+
+            let applications = JSON.parse(localStorage.getItem('applications') || '[]');
+            applications.push(data);
+            localStorage.setItem('applications', JSON.stringify(applications));
+
+            form.reset();
+            ctx.fillRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+            messageBoxContainer.classList.add('visible');
+        });
+
+        // Admin Login and Dashboard
+        showAdminLoginBtn.addEventListener('click', () => {
+            adminLoginModal.classList.add('visible');
+        });
+
+        adminLoginBtn.addEventListener('click', () => {
+            if (adminPasswordInput.value === 'LAC') {
+                adminLoginModal.classList.remove('visible');
+                showScreen(adminScreen);
+                loadApplications();
+            } else {
+                alert('Incorrect password.');
+            }
+        });
+
+        closeAdminLoginBtn.addEventListener('click', () => adminLoginModal.classList.remove('visible'));
+
+        function loadApplications() {
+            const applications = JSON.parse(localStorage.getItem('applications') || '[]');
+            applicationsList.innerHTML = ''; // Clear existing list
+            if (applications.length === 0) {
+                noApplicationsMsg.style.display = 'block';
+            } else {
+                noApplicationsMsg.style.display = 'none';
+                applications.forEach((app, index) => {
+                    const appCard = document.createElement('div');
+                    appCard.className = 'form-section cursor-pointer transition-transform duration-200 hover:scale-[1.01]';
+                    appCard.innerHTML = `
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-bold text-lg text-[#f97316]">${app.fullName}</h4>
+                            <span class="admin-status-badge ${app.status.toLowerCase()}">${app.status}</span>
+                        </div>
+                        <p class="text-sm text-gray-400">Email: ${app.email}</p>
+                        <p class="text-sm text-gray-400">Submitted: ${new Date(app.submissionDate).toLocaleString()}</p>
+                    `;
+                    appCard.addEventListener('click', () => showApplicationDetails(app, index));
+                    applicationsList.appendChild(appCard);
+                });
+            }
+        }
+
+        function showApplicationDetails(app, index) {
+            const detailModal = document.createElement('div');
+            detailModal.className = 'message-box-container visible';
+            detailModal.innerHTML = `
+                <div class="message-box p-6 overflow-y-auto max-h-[90vh]">
+                    <h3 class="text-xl font-bold mb-4">Application for ${app.fullName}</h3>
+                    <div class="text-left space-y-4 text-gray-400 text-sm">
+                        <div class="p-4 bg-[#374151] rounded-md">
+                            <h4 class="font-bold text-[#f97316] mb-2">Personal Information</h4>
+                            <p><strong>Name:</strong> ${app.fullName || 'N/A'}</p>
+                            <p><strong>Email:</strong> ${app.email || 'N/A'}</p>
+                            <p><strong>Phone:</strong> ${app.phone || 'N/A'}</p>
+                            <p><strong>DOB:</strong> ${app.dob || 'N/A'}</p>
+                            <p><strong>SSN:</strong> ${app.ssn || 'N/A'}</p>
+                            <p><strong>Driver's License:</strong> ${app.driversLicense || 'N/A'}</p>
+                            <p><strong>Current Address:</strong> ${app.address || 'N/A'}</p>
+                        </div>
+                        <div class="p-4 bg-[#374151] rounded-md">
+                            <h4 class="font-bold text-[#f97316] mb-2">Residential History</h4>
+                            <p><strong>Previous Address:</strong> ${app.prevAddress1 || 'N/A'}</p>
+                            <p><strong>Landlord:</strong> ${app.prevLandlord1 || 'N/A'}</p>
+                            <p><strong>Moved In:</strong> ${app.moveIn1 || 'N/A'}</p>
+                            <p><strong>Moved Out:</strong> ${app.moveOut1 || 'N/A'}</p>
+                            <p><strong>Reason for Leaving:</strong> ${app.reasonForLeaving1 || 'N/A'}</p>
+                        </div>
+                        <div class="p-4 bg-[#374151] rounded-md">
+                            <h4 class="font-bold text-[#f97316] mb-2">Employment Details</h4>
+                            <p><strong>Employer:</strong> ${app.employer || 'N/A'}</p>
+                            <p><strong>Job Title:</strong> ${app.jobTitle || 'N/A'}</p>
+                            <p><strong>Monthly Income:</strong> $${app.income || 'N/A'}</p>
+                            <p><strong>Employment Length:</strong> ${app.employmentLength || 'N/A'}</p>
+                            <p><strong>Supervisor:</strong> ${app.supervisorName || 'N/A'}</p>
+                        </div>
+                        <div class="p-4 bg-[#374151] rounded-md">
+                            <h4 class="font-bold text-[#f97316] mb-2">Other Information</h4>
+                            <p><strong>Vehicle:</strong> ${app.vehicleMake || 'N/A'} ${app.vehicleModel || ''} (${app.vehicleYear || 'N/A'}) - Plate: ${app.licensePlate || 'N/A'}</p>
+                            <p><strong>Occupants:</strong> ${app.occupants || 'N/A'}</p>
+                            <p><strong>Pets:</strong> ${app.pets || 'N/A'}</p>
+                        </div>
+                        <div class="p-4 bg-[#374151] rounded-md">
+                            <h4 class="font-bold text-[#f97316] mb-2">Signature</h4>
+                            <img src="${app.signatureImage}" alt="Digital Signature" class="w-full border border-gray-600 rounded-md mt-2">
+                            <p class="mt-2"><strong>Signed on:</strong> ${app.signatureDate}</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center mt-6">
+                        <button id="markApprovedBtn" class="py-2 px-4 rounded-md bg-green-500 text-white font-bold hover:bg-green-600">Approve</button>
+                        <button id="markDeniedBtn" class="py-2 px-4 rounded-md bg-red-500 text-white font-bold hover:bg-red-600">Deny</button>
+                        <button id="closeDetailBtn" class="py-2 px-4 rounded-md bg-gray-600 text-white font-bold hover:bg-gray-700">Close</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(detailModal);
+
+            document.getElementById('closeDetailBtn').addEventListener('click', () => detailModal.remove());
+            document.getElementById('markApprovedBtn').addEventListener('click', () => updateStatus(index, 'Approved', detailModal));
+            document.getElementById('markDeniedBtn').addEventListener('click', () => updateStatus(index, 'Denied', detailModal));
+        }
+
+        function updateStatus(index, newStatus, modal) {
+            let applications = JSON.parse(localStorage.getItem('applications'));
+            if (applications && applications[index]) {
+                applications[index].status = newStatus;
+                localStorage.setItem('applications', JSON.stringify(applications));
+                modal.remove();
+                loadApplications(); // Refresh the dashboard
+            }
+        }
+
+        // Collapsible Sections
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId + 'Section');
+            const icon = document.getElementById(sectionId + 'Icon');
+            section.classList.toggle('hidden');
+            icon.classList.toggle('rotate-90');
+        }
+
+        // Global Modal Logic
+        feeBtn.addEventListener('click', () => feeMessageBoxContainer.classList.add('visible'));
+        contactBtn.addEventListener('click', () => contactMessageBoxContainer.classList.add('visible'));
+        closeBtn.addEventListener('click', () => messageBoxContainer.classList.remove('visible'));
+        closeFeeBtn.addEventListener('click', () => feeMessageBoxContainer.classList.remove('visible'));
+        closeContactBtn.addEventListener('click', () => contactMessageBoxContainer.classList.remove('visible'));
+
+    </script>
+</body>
+</html>
